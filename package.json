@@ -1,0 +1,132 @@
+{
+  "name": "ios-sim-viewer",
+  "displayName": "iOS Simulator Viewer",
+  "description": "See and drive a booted iOS simulator right inside VS Code: hardware-decoded video up to 60 fps, live touch, trackpad scrolling and a hardware keyboard. macOS only.",
+  "version": "0.1.0",
+  "publisher": "nikhil-13",
+  "license": "MIT",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nikhil-13/ios-sim-viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Nikhil-13/ios-sim-viewer/issues"
+  },
+  "homepage": "https://github.com/Nikhil-13/ios-sim-viewer#readme",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "ios",
+    "simulator",
+    "iphone",
+    "xcode",
+    "swift",
+    "react native",
+    "flutter",
+    "expo",
+    "mobile"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "extensionKind": [
+    "ui"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  },
+  "main": "./extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "iosSim",
+          "title": "iOS Simulator",
+          "icon": "icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "iosSim": [
+        {
+          "type": "webview",
+          "id": "iosSim.view",
+          "name": "Simulator"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "iosSim.open",
+        "title": "Show iOS Simulator",
+        "category": "Simulator"
+      },
+      {
+        "command": "iosSim.pick",
+        "title": "Choose Simulator…",
+        "category": "Simulator",
+        "icon": "$(device-mobile)"
+      },
+      {
+        "command": "iosSim.home",
+        "title": "Home",
+        "category": "Simulator",
+        "icon": "$(home)"
+      },
+      {
+        "command": "iosSim.lock",
+        "title": "Lock",
+        "category": "Simulator",
+        "icon": "$(lock)"
+      },
+      {
+        "command": "iosSim.reload",
+        "title": "Reconnect",
+        "category": "Simulator",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "iosSim.stop",
+        "title": "Stop Viewer",
+        "category": "Simulator",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "iosSim.start",
+        "title": "Start Viewer",
+        "category": "Simulator",
+        "icon": "$(play)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "iosSim.pick",
+          "when": "view == iosSim.view",
+          "group": "navigation@1"
+        },
+        {
+          "command": "iosSim.reload",
+          "when": "view == iosSim.view",
+          "group": "navigation@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "iosSim.stop",
+          "when": "iosSim.on"
+        },
+        {
+          "command": "iosSim.start",
+          "when": "!iosSim.on"
+        }
+      ]
+    }
+  }
+}

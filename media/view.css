@@ -1,0 +1,108 @@
+/* The simulator page: VS Code theme colours throughout. */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  overflow: hidden;
+  font: var(--vscode-font-size, 13px) var(--vscode-font-family, sans-serif);
+  color: var(--vscode-foreground);
+}
+
+/* The screen keeps its aspect ratio and fits whatever space the view has; its control bar sits right under it. */
+#stage {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+#controls {
+  display: flex;
+  gap: 2px;
+  margin-top: 10px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.12));
+  border: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+}
+button.icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  color: var(--vscode-icon-foreground, currentColor);
+  background: transparent;
+}
+button.icon:hover { background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.2)); }
+button.icon:active { background: var(--vscode-toolbar-activeBackground, rgba(128, 128, 128, 0.3)); }
+#screen {
+  flex: none;
+  max-width: 100%;
+  max-height: calc(100% - 46px); /* leaves room for the control bar */
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  box-shadow: 0 0 0 1px var(--vscode-widget-border, rgba(128, 128, 128, 0.35)), 0 6px 24px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.35));
+}
+#screen:focus-visible { box-shadow: 0 0 0 2px var(--vscode-focusBorder), 0 6px 24px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.35)); }
+[hidden] { display: none !important; }
+
+#card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+}
+#card .big { color: var(--vscode-icon-foreground, currentColor); opacity: 0.8; }
+#card[data-kind='alert'] .big { color: var(--vscode-errorForeground); opacity: 1; }
+#card h3 { margin: 0; font-size: 1.1em; font-weight: 600; color: var(--vscode-foreground); }
+#card p { margin: 0; max-width: 300px; line-height: 1.45; overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+button {
+  height: 28px;
+  padding: 0 14px;
+  border: 1px solid var(--vscode-button-border, transparent);
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+}
+button:hover { background: var(--vscode-button-hoverBackground); }
+button.secondary { color: var(--vscode-button-secondaryForeground); background: var(--vscode-button-secondaryBackground); }
+button.secondary:hover { background: var(--vscode-button-secondaryHoverBackground); }
+button:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: 2px; }
+.spin {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--vscode-progressBar-background, #0e70c0);
+  border-right-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#toast {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: var(--vscode-notifications-foreground);
+  background: var(--vscode-notifications-background);
+  border: 1px solid var(--vscode-notifications-border, transparent);
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.3));
+}

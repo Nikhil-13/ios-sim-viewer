@@ -5,3 +5,4 @@ check.js
 images/screenshot*.png
 images/icon.svg
 PUBLISHING.md
+.github/**

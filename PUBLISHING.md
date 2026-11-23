@@ -38,14 +38,20 @@ git push -u origin main
 
 ## 4. Publish for Mac only
 
-1. Create a publisher at https://marketplace.visualstudio.com/manage, signed in with the new account. Its ID must match `publisher` in `package.json`.
-2. Create a personal access token in Azure DevOps (https://dev.azure.com, User settings → Personal access tokens). Set Organization to "All accessible organizations" and Scopes to Marketplace → Manage.
-3. Log in and publish. The target flag stops Windows and Linux users being offered the extension.
+Publishing uses Trusted Publishing: GitHub Actions authenticates to the Marketplace over OIDC, so there is no personal access token and no Azure DevOps organisation to create.
 
-```sh
-npx @vscode/vsce login <publisher-id>
-npx @vscode/vsce publish --target darwin-arm64 darwin-x64
-```
+1. Create a publisher at https://marketplace.visualstudio.com/manage, signed in with the new account. Its ID must match `publisher` in `package.json`.
+2. On that publisher, open **Trusted Publishing** -> **Create** and register the workflow:
+
+   | Field | Value |
+   | --- | --- |
+   | Policy name | `Release workflow` |
+   | Repository owner | `Nikhil-13` |
+   | Repository name | `ios-sim-viewer` |
+   | Workflow filename | `publish.yml` |
+   | GitHub environment | leave blank |
+
+3. Run the workflow: GitHub -> Actions -> **Publish** -> **Run workflow**. The workflow lives in `.github/workflows/publish.yml` and targets `darwin-arm64` and `darwin-x64`, so Windows and Linux users are not offered the extension.
 
 To check the package first without publishing, run `npx @vscode/vsce package`. It should finish with no warnings.
 
@@ -61,4 +67,4 @@ Then run "Developer: Reload Window".
 
 ## Later releases
 
-Bump `version` in `package.json`, add an entry to `CHANGELOG.md`, commit and push, then run the publish command from step 4 again.
+Bump `version` in `package.json`, add an entry to `CHANGELOG.md`, commit and push, then run the **Publish** workflow again from the Actions tab.

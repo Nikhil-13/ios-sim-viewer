@@ -136,6 +136,19 @@ const grpcError = (h) => h['grpc-status'] && h['grpc-status'] !== '0' && new Err
 
 // --- companion ---
 
+// The screen size in UIKit points, which is what the HID touch coordinates use. The companion reports
+// points = pixels / scale, but "display zoom" devices render at a higher logical size and downsample to the
+// panel, so their real UIKit size (pixels / nativeScale) is larger than pixels / scale — touches on them would
+// otherwise land increasingly high toward the bottom. These are the only such devices; every other device has
+// nativeScale == scale, so its reported points are already right.
+// ponytail: static table because nativeScale/UIKit size is in neither `describe` nor the device-type profile, only
+// UIScreen at runtime. Add a row for any new downsample device, or query UIScreen if a user sets Display Zoom.
+const UIKIT_POINTS = {
+  '1080x2340': { w: 375, h: 812 }, // iPhone 12 / 13 mini
+  '1080x1920': { w: 414, h: 736 }, // iPhone 6/6s/7/8 Plus
+};
+const uiPoints = (wPx, hPx, wPt, hPt) => UIKIT_POINTS[`${wPx}x${hPx}`] || { w: wPt, h: hPt };
+
 let seq = 0;
 
 // Starts a companion for one simulator on a private socket. Resolves with its screen size (points) and send(event).
@@ -198,11 +211,11 @@ async function startCompanion(udid, { onExit, onError }) {
   };
 
   try {
-    // TargetDescriptionResponse.target_description(1).screen_dimensions(3).{width_points 4, height_points 5}
+    // TargetDescriptionResponse.target_description(1).screen_dimensions(3): width_px 1, height_px 2, width_points 4, height_points 5
     const response = await unary('describe', Buffer.alloc(0));
     const dims = decode(decode(response[1][0])[3][0]);
     openHid(); // opened now so the companion counts as busy and doesn't idle out
-    return { screen: { w: dims[4][0], h: dims[5][0] }, send, close };
+    return { screen: uiPoints(dims[1][0], dims[2][0], dims[4][0], dims[5][0]), send, close };
   } catch (e) {
     close();
     throw e;
@@ -266,4 +279,4 @@ function isKeyframe(data) {
   return false;
 }
 
-module.exports = { listDevices, boot, pbcopy, pbpaste, startCompanion, startVideo, HID, BUTTON, decode };
+module.exports = { listDevices, boot, pbcopy, pbpaste, startCompanion, startVideo, HID, BUTTON, decode, uiPoints };

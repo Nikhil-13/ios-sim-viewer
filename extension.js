@@ -112,12 +112,14 @@ async function pickDevice() {
   connect(d.udid);
 }
 
-// Hardware button: press and release.
-function button(name) {
+// Hardware button: press and release. double: press twice (a double-press of Home opens the app switcher).
+function button(name, double) {
   const c = session && session.companion;
   if (!c) return;
-  c.send(sim.HID.button(sim.BUTTON[name], true));
-  setTimeout(() => c.send(sim.HID.button(sim.BUTTON[name], false)), 60);
+  const code = sim.BUTTON[name];
+  const tap = (t) => (setTimeout(() => c.send(sim.HID.button(code, true)), t), setTimeout(() => c.send(sim.HID.button(code, false)), t + 60));
+  tap(0);
+  if (double) tap(180);
 }
 
 // Stop: ends the stream and input; the simulator keeps running.
@@ -158,8 +160,8 @@ async function onMessage(m) {
       }
       return command(25); // V
     }
-    case 'button': // the bar under the screen
-      return button(m.name === 'LOCK' ? 'LOCK' : 'HOME');
+    case 'button': // the bar under the screen, or a home-indicator swipe
+      return button(m.name === 'LOCK' ? 'LOCK' : 'HOME', m.double);
     case 'stop':
       return stopByUser();
     case 'retry':

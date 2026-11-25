@@ -138,18 +138,52 @@ const at = (e) => {
 };
 const touch = (phase, p) => send({ type: 'touch', phase, x: p.x, y: p.y });
 
+// The home-indicator swipe can't be injected as a touch — idb's HID makes the pill react but the gesture never
+// commits. So a drag that starts in the bottom strip isn't sent to the app (that only scrolls it, then jerks to
+// home); instead, as on iOS, a swipe up releases to Home and a swipe up that then holds opens the app switcher
+// (a double Home press). A plain tap in the strip is still forwarded, so bottom bars and buttons keep working.
 let finger = null; // pointer id while the mouse button is down
+let start = null; // where the drag began
+let inStrip = false; // started in the bottom home-indicator strip: hold the touch, decide tap vs swipe
+let armed = false; // an upward swipe from the strip is under way
+let holdTimer;
+const endStrip = () => (inStrip = armed = false, clearTimeout(holdTimer));
+
 canvas.addEventListener('pointerdown', (e) => {
   if (!live || e.button !== 0 || finger !== null) return;
   finger = e.pointerId;
   canvas.setPointerCapture(e.pointerId);
-  touch('down', at(e));
+  start = at(e);
+  inStrip = start.y >= 0.96;
+  armed = false;
+  if (!inStrip) touch('down', start);
 });
-canvas.addEventListener('pointermove', (e) => e.pointerId === finger && touch('move', at(e)));
+const goHome = (double, id) => {
+  send({ type: 'button', name: 'HOME', ...(double && { double: true }) });
+  (finger = null), canvas.releasePointerCapture(id), endStrip();
+};
+canvas.addEventListener('pointermove', (e) => {
+  if (e.pointerId !== finger) return;
+  const p = at(e);
+  if (!inStrip) return touch('move', p);
+  const up = start.y - p.y;
+  if (up >= 0.13) return goHome(false, e.pointerId); // committed swipe up: go home at once, no wait for release
+  if (!armed && up >= 0.05) armed = true;
+  if (armed) {
+    clearTimeout(holdTimer);
+    holdTimer = setTimeout(() => goHome(true, e.pointerId), 160); // swiped up a little, then held still: app switcher
+  }
+});
 const lift = (e) => {
   if (e.pointerId !== finger) return;
   finger = null;
-  touch('up', at(e));
+  const p = at(e);
+  if (inStrip) {
+    if (armed) send({ type: 'button', name: 'HOME' }); // quick swipe up: go home
+    else (touch('down', start), touch('up', p)); // just a tap in the strip
+    return endStrip();
+  }
+  touch('up', p);
 };
 canvas.addEventListener('pointerup', lift);
 canvas.addEventListener('pointercancel', lift);

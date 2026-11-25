@@ -2,7 +2,7 @@
   "name": "ios-sim-viewer",
   "displayName": "iOS Simulator Viewer",
   "description": "See and drive a booted iOS simulator right inside VS Code: hardware-decoded video up to 60 fps, live touch, trackpad scrolling and a hardware keyboard. macOS only.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "nikhil-13",
   "license": "MIT",
   "icon": "images/icon.png",
